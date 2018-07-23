@@ -39,18 +39,20 @@ public class MainActivity extends AppCompatActivity {
 
     private GoogleMap map;
 
+    //private Marker marker;
+    private Marker previousMarker = null;
+
     private ListView listView;
     ArrayList<TrafficDetail> al = new ArrayList<TrafficDetail>();
     TrafficArrayAdapter aa;
     Spinner spinner;
 
-    String formattedDate;
+    String formattedDate,image,longitude,latitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         listView = (ListView) findViewById(R.id.lv);
         aa = new TrafficArrayAdapter(this, R.layout.activity_row, al);
@@ -65,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         formattedDate = df.format(c);
 
         //
-
         //map
         FragmentManager fm = getSupportFragmentManager();
         SupportMapFragment mapFragment = (SupportMapFragment)
@@ -83,6 +84,26 @@ public class MainActivity extends AppCompatActivity {
                 //setZoom
                 UiSettings uiz = map.getUiSettings();
                 uiz.setZoomControlsEnabled(true);
+
+
+                map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        if (previousMarker != null) {
+                            previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        }
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        previousMarker = marker;
+
+                        Intent intent = new Intent(MainActivity.this,TrafficListDetail.class);
+                        intent.putExtra("imageurl",image);
+                        startActivity(intent);
+
+                        return true;
+                    }
+                });
+
+
             }
 
         });
@@ -104,24 +125,6 @@ public class MainActivity extends AppCompatActivity {
         request.setMethod("GET");
         request.execute();
         // Code for step 1 end
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String imageurl = al.get(position).getImageurl();
-                String latitude = al.get(position).getLatitude();
-                String longitude = al.get(position).getLongitude();
-                String time = al.get(position).getTime();
-                int trafficId = al.get(position).getId();
-
-                Intent intent = new Intent(MainActivity.this,TrafficListDetail.class);
-                intent.putExtra("imageurl",imageurl);
-                intent.putExtra("latitude",latitude);
-                intent.putExtra("longitude",longitude);
-                startActivity(intent);
-
-            }
-        });
-
 
     }
     // Code for step 2 start
@@ -142,16 +145,16 @@ public class MainActivity extends AppCompatActivity {
                             JSONArray camera = jsonObj.getJSONArray("cameras");
                             for (int j=0; j<camera.length(); j++) {
                                 JSONObject cameraobj = camera.getJSONObject(j);
-                                int id = cameraobj.getInt("camera_id");
+                                final int id = cameraobj.getInt("camera_id");
 
                                 String time = cameraobj.getString("timestamp");
                                 JSONObject location = cameraobj.getJSONObject("location");
-                                final String latitude = location.getString("latitude");
-                                final String longitude = location.getString("longitude");
-                                final String image = cameraobj.getString("image");
+                                 latitude = location.getString("latitude");
+                                 longitude = location.getString("longitude");
+                                 image = cameraobj.getString("image");
 
                                 TrafficDetail trafficDetail = new TrafficDetail(id, time, latitude, longitude, image);
-                                Log.d("MainActivity", "" + trafficDetail.toString());
+                                Log.d("MainActivity", "traffic detail item: " + trafficDetail.toString());
                                 al.add(trafficDetail);
 
                                 LatLng poi = new LatLng( Double.parseDouble(latitude), Double.parseDouble(longitude));
@@ -159,24 +162,27 @@ public class MainActivity extends AppCompatActivity {
                                         MarkerOptions()
                                         .position(poi)
                                         .title(""+id)
-                                        .snippet("snippet")
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
-
+                            /*
                                 map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                     @Override
                                     public boolean onMarkerClick(Marker marker) {
+                                        if(marker==true){
+                                            Log.d("MainActivity","Marker clicked");
+                                            Toast.makeText(MainActivity.this, "Marker clicked", Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(MainActivity.this,TrafficListDetail.class);
+                                            intent.putExtra("imageurl",image);
+                                            intent.putExtra("latitude",latitude);
+                                            intent.putExtra("longitude",longitude);
+                                            startActivity(intent);
 
-                                        Log.d("MainActivity","Marker clicked");
-                                        Toast.makeText(MainActivity.this, "Marker clicked", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(MainActivity.this,TrafficListDetail.class);
-                                        intent.putExtra("imageurl",image);
-                                        intent.putExtra("latitude",latitude);
-                                        intent.putExtra("longitude",longitude);
-                                        startActivity(intent);
+                                        }
+
                                         return true;
                                     }
                                 });
+                                */
 
                             }
                         }

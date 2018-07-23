@@ -47,13 +47,7 @@ public class TrafficListDetail extends AppCompatActivity {
         longitude = j.getStringExtra("longitude");
 
         Picasso.with(this).load(imageurl).into(iv);
-/*
-        if (latitude.equals("1.326024822")&&longitude.equals("103.905625")) {
-            tvLocationName.setText("Tuas Checkpoint");
-        }else{
-            tvLocationName.setText(latitude+" , "+longitude);
-        }
-*/
+
 
 //getCurrentTime
         Date c = Calendar.getInstance().getTime();
@@ -111,7 +105,9 @@ public class TrafficListDetail extends AppCompatActivity {
                             }
                         }
                         Log.d("Line111","area: "+wname+wlatitude+","+wlongitude+" items: "+areaName+forecastString);
-                         /*
+                      
+
+/*
                          if((latitude.equals(wlatitude))&&(longitude.equals(wlongitude))){
                                     if(wname.equals(areaName)){
                                         tvLocationName.setText(wname);
@@ -119,7 +115,7 @@ public class TrafficListDetail extends AppCompatActivity {
                                     }
 
                           }
-                         */
+*/
 
                     }
                     catch(Exception e){
