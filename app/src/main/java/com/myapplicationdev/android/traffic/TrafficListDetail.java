@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 public class TrafficListDetail extends AppCompatActivity {
     String formattedDate;
-    ImageView iv;
+    ImageView iv,ivWeather;
     TextView tvLocationName,tvWeather;
     String imageurl;
     double latitude,longitude;
@@ -61,6 +61,7 @@ public class TrafficListDetail extends AppCompatActivity {
         tvLocationName = (TextView)findViewById(R.id.textViewLocationName);
         tvWeather = (TextView)findViewById(R.id.tvWeather);
         iv = (ImageView)findViewById(R.id.imageView);
+        ivWeather = (ImageView)findViewById(R.id.ivWeather);
 
         distanceMapping = new HashMap<>();
 
@@ -89,8 +90,6 @@ public class TrafficListDetail extends AppCompatActivity {
         request.setMethod("GET");
         request.execute();
         // Code for step 1 end
-
-
     }
 
     public double distance (double lat_a, double lng_a, double lat_b, double lng_b ) {
@@ -169,8 +168,26 @@ public class TrafficListDetail extends AppCompatActivity {
                         currentTown = target;
                         tvLocationName.setText(target.name);
                         tvWeather.setText(target.weather);
-                        
+                        Log.d("Weather Now",""+target.weather);
+                        if (target.weather.equals("Partly Cloudy (Night)")){
+                            ivWeather.setImageResource(R.drawable.partlycloudy_night);
+                        }else if (target.weather.equals("Partly Cloudy (Day)")){
+                            ivWeather.setImageResource(R.drawable.partlycloudy_day);
+                        } else if (target.weather.toString().equals("Showers")) {
+                            ivWeather.setImageResource(R.drawable.heavyrain);
+                        }else if (target.weather.toString().equals("Cloudy")){
+                            ivWeather.setImageResource(R.drawable.cloudy);
+                        }else if (target.weather.toString().equals("Light Rain")){
+                            ivWeather.setImageResource(R.drawable.sunny_rain);
+                        }else if (target.weather.toString().equals("Thundery Showers")){
+                            ivWeather.setImageResource(R.drawable.thunder);
+                        }else if (target.weather.toString().equals("Heavy Thundery Showers")){
+                            ivWeather.setImageResource(R.drawable.thunder);
+                        }else if (target.weather.toString().equals("Fair (Day)")){
+                            ivWeather.setImageResource(R.drawable.sunny);
+                        } else{
 
+                        }
                     }
                     catch(Exception e){
                         e.printStackTrace();
