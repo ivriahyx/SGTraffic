@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
         //2018-06-25T12:09:05
         formattedDate = df.format(c);
 
-        //
         //map
         FragmentManager fm = getSupportFragmentManager();
         SupportMapFragment mapFragment = (SupportMapFragment)
@@ -95,8 +94,21 @@ public class MainActivity extends AppCompatActivity {
                         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                         previousMarker = marker;
 
+                        /*
+                        for(int j = 0;j<al.size();j++){
+                            String markerId = marker.getTitle();
+
+                        }
+                        */
+
                         Intent intent = new Intent(MainActivity.this,TrafficListDetail.class);
-                        intent.putExtra("imageurl",image);
+                        intent.putExtra("imageurl",marker.getSnippet());
+                        LatLng t = marker.getPosition();
+                        intent.putExtra("lat",t.latitude);
+                        intent.putExtra("lng",t.longitude);
+
+
+
                         startActivity(intent);
 
                         return true;
@@ -162,13 +174,14 @@ public class MainActivity extends AppCompatActivity {
                                         MarkerOptions()
                                         .position(poi)
                                         .title(""+id)
+                                        .snippet(image)
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
-                            /*
+/*
                                 map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                     @Override
                                     public boolean onMarkerClick(Marker marker) {
-                                        if(marker==true){
+                                        if(marker == true){
                                             Log.d("MainActivity","Marker clicked");
                                             Toast.makeText(MainActivity.this, "Marker clicked", Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(MainActivity.this,TrafficListDetail.class);
@@ -182,7 +195,8 @@ public class MainActivity extends AppCompatActivity {
                                         return true;
                                     }
                                 });
-                                */
+         */
+
 
                             }
                         }

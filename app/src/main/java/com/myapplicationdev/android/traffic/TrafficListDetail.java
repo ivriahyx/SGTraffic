@@ -23,14 +23,35 @@ import org.w3c.dom.Text;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class TrafficListDetail extends AppCompatActivity {
     String formattedDate;
     ImageView iv;
     TextView tvLocationName,tvWeather;
-    String imageurl,latitude,longitude;
-    String wname,wlatitude,wlongitude;
-    String areaName,forecastString;
+    String imageurl;
+    double latitude,longitude;
+    HashMap <String, Town> distanceMapping;
+    Town currentTown;
+
+    private class Town{
+        String name;
+        double lat;
+        double lon;
+        double distance;
+        String weather;
+
+        @Override
+        public String toString() {
+            return "Town{" +
+                    "name='" + name + '\'' +
+                    ", lat=" + lat +
+                    ", lon=" + lon +
+                    ", distance=" + distance +
+                    ", weather='" + weather + '\'' +
+                    '}';
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +62,14 @@ public class TrafficListDetail extends AppCompatActivity {
         tvWeather = (TextView)findViewById(R.id.tvWeather);
         iv = (ImageView)findViewById(R.id.imageView);
 
+        distanceMapping = new HashMap<>();
+
         Intent j = getIntent();
         imageurl = j.getStringExtra("imageurl");
-        latitude = j.getStringExtra("latitude");
-        longitude = j.getStringExtra("longitude");
+        latitude = j.getDoubleExtra("lat",1.03);
+        longitude = j.getDoubleExtra("lng",103.1);
 
+        Log.d("LatLng",latitude+","+longitude);
         Picasso.with(this).load(imageurl).into(iv);
 
 
@@ -69,6 +93,20 @@ public class TrafficListDetail extends AppCompatActivity {
 
     }
 
+    public double distance (double lat_a, double lng_a, double lat_b, double lng_b ) {
+        double earthRadius = 3958.75;
+        double latDiff = Math.toRadians(lat_b-lat_a);
+        double lngDiff = Math.toRadians(lng_b-lng_a);
+        double a = Math.sin(latDiff /2) * Math.sin(latDiff /2) +
+                Math.cos(Math.toRadians(lat_a)) * Math.cos(Math.toRadians(lat_b)) *
+                        Math.sin(lngDiff /2) * Math.sin(lngDiff /2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double distance = earthRadius * c;
+
+        int meterConversion = 1609;
+
+        return new Double(distance * meterConversion).doubleValue();
+    }
     // Code for step 2 start
     private HttpRequest.OnHttpResponseListener weatherHttpResponseListener =
             new HttpRequest.OnHttpResponseListener() {
@@ -84,10 +122,15 @@ public class TrafficListDetail extends AppCompatActivity {
                             JSONObject jsonObj_area = jsonArrayArea.getJSONObject(i);
                             Log.d("TrafficListDetail","Area_metadata: "+jsonObj_area.toString());
 
-                            wname = jsonObj_area.getString("name");
+                            String wname = jsonObj_area.getString("name");
                             JSONObject jsonLocation = jsonObj_area.getJSONObject("label_location");
-                            wlatitude = jsonLocation.getString("latitude");
-                            wlongitude = jsonLocation.getString("longitude");
+                            String wlatitude = jsonLocation.getString("latitude");
+                            String wlongitude = jsonLocation.getString("longitude");
+                            Town newTown = new Town();
+                            newTown.lat = Double.parseDouble(wlatitude);
+                            newTown.lon = Double.parseDouble(wlongitude);
+                            newTown.name = wname;
+                            distanceMapping.put(wname, newTown);
                         }
 
                         JSONArray jsonArrayitems = jsonObject.getJSONArray("items");
@@ -100,22 +143,33 @@ public class TrafficListDetail extends AppCompatActivity {
 
                             for(int j=0; j<jsonArrayForecast.length(); j++){
                                 JSONObject jsonObj_forecast = jsonArrayForecast.getJSONObject(j);
-                                areaName = jsonObj_forecast.getString("area");
-                                forecastString = jsonObj_forecast.getString("forecast");
+                                String areaName = jsonObj_forecast.getString("area");
+                                String forecastString = jsonObj_forecast.getString("forecast");
+                                Town searchedTown = distanceMapping.get(areaName);
+                                if (searchedTown != null){
+                                    searchedTown.weather = forecastString;
+                                    double calc_dist = distance(latitude, longitude, searchedTown.lat, searchedTown.lon);
+                                    searchedTown.distance = calc_dist;
+                                    Log.d("Township", searchedTown.toString());
+                                }
                             }
                         }
-                        Log.d("Line111","area: "+wname+wlatitude+","+wlongitude+" items: "+areaName+forecastString);
-                      
+                        //search
+                        Town target = null;
+                        double dist = 30000;
+                        for ( String key : distanceMapping.keySet() ) {
+                            Town curTown = distanceMapping.get(key);
+                            if (curTown.distance < dist){
+                                dist = curTown.distance;
+                                target = curTown;
+                            }
+                        }
+                        Log.d("Nearest Township", target.toString());
 
-/*
-                         if((latitude.equals(wlatitude))&&(longitude.equals(wlongitude))){
-                                    if(wname.equals(areaName)){
-                                        tvLocationName.setText(wname);
-                                        tvWeather.setText(forecastString);
-                                    }
-
-                          }
-*/
+                        currentTown = target;
+                        tvLocationName.setText(target.name);
+                        tvWeather.setText(target.weather);
+                        
 
                     }
                     catch(Exception e){

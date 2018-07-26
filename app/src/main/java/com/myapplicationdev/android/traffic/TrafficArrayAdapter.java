@@ -47,8 +47,6 @@ public class TrafficArrayAdapter extends ArrayAdapter<TrafficDetail>{
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = inflater.inflate(R.layout.activity_row, parent, false);
-
-
         //map
         /*
         FragmentManager fm = ((MainActivity)context).getSupportFragmentManager();
