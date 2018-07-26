@@ -1,7 +1,11 @@
 package com.myapplicationdev.android.traffic;
 
+import android.Manifest;
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         //getCurrentTime
         Date c = Calendar.getInstance().getTime();
-        System.out.println("Current time => " + c);
+        System.out.println("Current time Location => " + c);
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         //2018-06-25T12:09:05
@@ -75,6 +79,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 map = googleMap;
+                int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+                if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
+                    map.setMyLocationEnabled(true);
+                } else {
+                    Log.e("GMap - Permission", "GPS access has not been granted");
+                }
+
 
                 LatLng poi_sg = new LatLng(1.352083, 103.819836);
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(poi_sg,
@@ -94,20 +107,11 @@ public class MainActivity extends AppCompatActivity {
                         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                         previousMarker = marker;
 
-                        /*
-                        for(int j = 0;j<al.size();j++){
-                            String markerId = marker.getTitle();
-
-                        }
-                        */
-
                         Intent intent = new Intent(MainActivity.this,TrafficListDetail.class);
                         intent.putExtra("imageurl",marker.getSnippet());
                         LatLng t = marker.getPosition();
                         intent.putExtra("lat",t.latitude);
                         intent.putExtra("lng",t.longitude);
-
-
 
                         startActivity(intent);
 

@@ -78,10 +78,10 @@ public class TrafficListDetail extends AppCompatActivity {
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         //2018-06-25T12:09:05
         formattedDate = df.format(c);
-        Log.d("CurrentTime",""+formattedDate.replace(" ","T"));
+        Log.d("CurrentTime Weather",""+formattedDate.replace(" ","T"));
         //
         // Code for step 1 start
         HttpRequest request = new HttpRequest
