@@ -14,13 +14,13 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:text="TextView"
-        android:textSize="22sp"
+        android:textSize="26sp"
         android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="400dp"
         android:layout_gravity="center"
         android:layout_weight="1" />
 
@@ -32,10 +32,9 @@
 
         <ImageView
             android:id="@+id/ivWeather"
-            android:layout_width="60dp"
+            android:layout_width="70dp"
             android:layout_height="80dp"
-            android:layout_weight="0.5"
-            />
+            android:layout_weight="0.5" />
 
         <TextView
             android:id="@+id/tvWeather"
@@ -43,7 +42,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="0.5"
-            android:text="TextView" />
+            android:text="TextView"
+            android:textSize="20sp" />
     </LinearLayout>
 
 </LinearLayout>

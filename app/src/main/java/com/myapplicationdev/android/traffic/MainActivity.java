@@ -79,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 map = googleMap;
+                LatLng poi_sg = new LatLng(1.352083, 103.819836);
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(poi_sg,
+                        11));
                 int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
                         android.Manifest.permission.ACCESS_FINE_LOCATION);
 
@@ -86,12 +89,13 @@ public class MainActivity extends AppCompatActivity {
                     map.setMyLocationEnabled(true);
                 } else {
                     Log.e("GMap - Permission", "GPS access has not been granted");
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                    // stops the action from proceeding further as permission not
+                    //  granted yet
+                    return;
                 }
 
-
-                LatLng poi_sg = new LatLng(1.352083, 103.819836);
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(poi_sg,
-                        11));
 
                 //setZoom
                 UiSettings uiz = map.getUiSettings();
